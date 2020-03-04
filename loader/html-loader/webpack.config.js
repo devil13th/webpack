@@ -27,12 +27,41 @@ module.exports = {
      
       {
         test: /\.css$/,
-        // 从下往上执行loader  先执行css-loader在执行style-loader
-        // css-loader 是编译css文件
-        // style-loader 是在html中加入style标签，引入已编译的css
-        use: [ 
+        use: [
           { loader: "style-loader" },
           { loader: "css-loader"}
+        ],
+        exclude:/node_modules/
+      },
+      {
+        // url-loader 只能处理CSS中的图片，而不能处理html中的img 标签的图片
+        //test: /\.(png|jpg)$/,
+        test: /\.(png|gif|jpg|svg|jpeg)$/i, //匹配css中的图片,后缀忽略大小写
+        use: [          
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8 * 1024,//byte为单位,超过8k的图片将拷贝到相应目录下(默认是dist) , 如果没超过次大小将用data:image/jpg;base64...的形式引入图片
+              outputPath:"img", //超过limit设置大小的图片将放到文件夹  dist/img
+
+              // 注意!!!! 
+              /**
+               * url-loader默认使用es6模块化解析，而html-loader引入图片是commonjs
+               * 解析时候会出现问题：[object Module]
+               * 解决：关闭url-loader的es6模块化
+               */
+              esModule:false,
+              //重命名图片
+              name:'[hash:10].[ext]' // [hash:10]:取hash值的前10位,[ext]:取文件原来的扩展名
+            }
+          }
+        ]
+      },
+      // html-loader 处理html中img图片，负责引入img,从而能被url-loader进行处理
+      {
+        test: /\.html$/,
+        use: [
+          { loader: "html-loader" }
         ],
         exclude:/node_modules/
       }

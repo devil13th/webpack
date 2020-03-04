@@ -17,6 +17,7 @@ module.exports = {
         }
       },
       {
+        // url-loader 只能处理CSS中的图片，而不能处理html中的img 标签的图片
         //test: /\.(png|jpg)$/,
         test: /\.(png|gif|jpg|svg|jpeg)$/i, //匹配所有图片,后缀忽略大小写
         use: [          
