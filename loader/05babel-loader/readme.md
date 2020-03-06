@@ -1,70 +1,71 @@
 [toc]
-# url-loader
-## 为什么使用url-loader
 
-如果我们希望在页面引入图片（包括img的src和background的url）。当我们基于webpack进行开发时，引入图片会遇到一些问题。
+*注：版本为webpack4.x*
+# babel-loader 的使用
 
-其中一个就是引用路径的问题。拿background样式用url引入背景图来说，我们都知道，webpack最终会将各个模块打包成一个文件，因此我们样式中的url路径是相对入口html页面的，而不是相对于原始css文件所在的路径的。这就会导致图片引入失败。这个问题是用file-loader解决的，file-loader可以解析项目中的url引入（不仅限于css），根据我们的配置，将图片拷贝到相应的路径，再根据我们的配置，修改打包后文件引用路径，使之指向正确的文件。
+将es6,jsx语法转换为es2015和react的语法，目的是让低版本浏览器可执行编写的js  
 
-另外，如果图片较多，会发很多http请求，会降低页面性能。这个问题可以通过url-loader解决。url-loader会将引入的图片编码，生成dataURl。相当于把图片数据翻译成一串字符。再把这串字符打包到文件中，最终只需要引入这个文件就能访问图片了。当然，如果图片较大，编码会消耗性能。因此url-loader提供了一个limit参数，小于limit字节的文件会被转为DataURl，大于limit的还会使用file-loader进行copy。
+来看一下main.jsx，文件内容如下：
 
-url-loader和file-loader是什么关系呢？简答地说，url-loader封装了file-loader。url-loader不依赖于file-loader，即使用url-loader时，只需要安装url-loader即可，不需要安装file-loader，因为url-loader内置了file-loader。通过上面的介绍，我们可以看到，url-loader工作分两种情况：1.文件大小小于limit参数，url-loader将会把文件转为DataURL；2.文件大小大于limit，url-loader会调用file-loader进行处理，参数也会直接传给file-loader。因此我们只需要安装url-loader即可。
-
-## 使用方式
-该loader可以将图片以模块的形式在js中进行引入。例如
-
-```js
-import React from 'react';
-import ReactDOM  from 'react-dom';
-
-import img1 from './images/big.png';
-import img2 from './images/small.png';
-
-alert(img1);
-alert(img2);
+```
+const React = require('react');
+const ReactDOM = require('react-dom');
 
 ReactDOM.render(
-  <div>
-    <img src={img1}/>
-    <img src={img2}/>
-  </div>,
-  document.getElementById('example')
+  <h1>Hello, world!</h1>,
+  document.querySelector('#wrapper')
 );
+
+const es6fun = () => {
+  alert(1)
+}
+
+const es6obj = {a:1,b:2}
+const es6obj2 = {...es6obj,c:3}
+
+const es6arrOperater = [1,2,3,4,5,6];
+const bbbb = [...es6arrOperater,7];
+
+
+class Es6class {
+  constructor(){
+    alert("constructor");
+  }
+
+  toString(){
+    return "1234"
+  }
+}
+
 ```
+如果是低版本的IE，上面代码是不能运行的,所以要用babel将一些高级语法转换成低版本浏览器可执行的语法。以下是使用babel-loader的方法
 
-上例中引入了2张图片, images/big.png和 images/small.png 
+## 先要安装react 和 stage-0
 
-## webpack.config.js配置
+> npm install react --save-dev
+> npm install babel-preset-stage-0 --save-dev
+
+
+## webpack.config.js配置如下：
 ```
 module.exports = {
+  //mode:生产模式production  开发模式development
   mode:"development", 
-  entry: './main.js',
+  entry: './main.jsx',
   output: {
-    filename: 'bundle.js'
+    filename: './bundle.js'
   },
   module: {
-    rules:[
-      {
-        test: /\.js[x]?$/,
-        exclude: /node_modules/,
+    rules: [
+      { 
+        test:/\.(js|jsx)$/, //匹配*.js或*.jsx文件
+        exclude: /node_modules/, //不包含node_modules目录下的文件
         use: {
-          loader: 'babel-loader',
+          loader: 'babel-loader', //
           options: {
-            presets: ['es2015', 'react']
+            presets: ['es2015', 'react', 'stage-0'] //处理后的语法为es2015 react stage-0的标准
           }
         }
-      },
-      {
-        test: /\.(png|jpg)$/,
-        use: [          
-          {
-            loader: 'url-loader',
-            options: {
-              limit: 8192,//byte为单位,超过此单位将拷贝到相应目录下(默认是dist) , 如果没超过次大小将用data:image/jpg;base64...的形式引入图片
-              outputPath:"img" //超过limit设置大小的图片将放到文件夹  dist/img
-            }
-          }
-        ]
       }
     ]
   }
@@ -72,24 +73,24 @@ module.exports = {
 
 ```
 
-## 参数配置
-
-options中的参数如下：
-`name`:表示输出的文件名规则，如果不添加这个参数，输出的就是默认值：文件哈希。加上[path]表示输出文件的相对路径与当前文件相对路径相同，加上[name].[ext]则表示输出文件的名字和扩展名与当前相同。加上[path]这个参数后，打包后文件中引用文件的路径也会加上这个相对路径。
-
-`limit`:byte为单位,超过此单位将拷贝到相应目录下(默认是dist) , 如果没超过次大小将用data:image/jpg;base64...的形式引入图片  
- `outputPath`:表示输出文件路径前缀。图片经过url-loader打包都会打包到指定的输出文件夹下。但是我们可以指定图片在输出文件夹下的路径。比如outputPath=img/，图片被打包时，就会在输出文件夹下新建（如果没有）一个名为img的文件夹，把图片放到里面。
 
 
-编译后的代码如下：
+
+
+babel-loader的presets的设置有一定的顺序。es2015必须出现在stage-0前面，我记得这是因为es2015是ES6的标准，state-0等是对ES7一些提案的支持, state-0为包含了es7最新的一些功能，state-1、2、3都只包含了部分功能。
+
+如果位子顺序颠倒的话，那么转码不成功，webpack打包失败。
+
+关于state-0，如果不加state-0，presets里只有es2015的话，那么最起码的react class中的箭头函数都不支持,扩展运算符(...)不支持。
+
+例如：
 ```
-<img src="img/4853ca667a2b8b8844eb2693ac1b2578.png">
-<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUg...">
+react: 将jsx语法转换为 react.createClass(...)
+es2015: 将es6语法转换为es5
+stage-0: 例如将对象的扩展运算符转换为es5的语法
 ```
-可以看到较小的图片已经使用base64进行编码后将该编码直接返回  
-较大的图片放到了`outputPath`配置的目录下
 
+执行命令如下：
+> webpack
 
-
-
-
+可以看到最终打包好的bundle.js中有关es6 和 jsx的语法都已经转换为低版本浏览器可执行的代码
