@@ -49,7 +49,14 @@ module.exports = {
           // 创建style标签，将样式引入
           //{ loader: "style-loader" },
           // 取代style-loader，提取js中的css到单独文件
-          { loader: MiniCssExtractPlugin.loader},
+          // options.publicPath 是css中图片的公共位置
+          { 
+            loader: MiniCssExtractPlugin.loader,
+            // url引用图片位置的公共路径
+            options:{
+              publicPath: '../'
+            }
+          },
           { loader: "css-loader"}
         ],
         exclude:/node_modules/
@@ -58,10 +65,16 @@ module.exports = {
         test: /\.less$/,
         use: [
           // 创建style标签，将样式引入
-          //'style-loader',
-
+          //{ loader: "style-loader" },
           // 取代style-loader，提取js中的css到单独文件
-          MiniCssExtractPlugin.loader,
+          // options.publicPath 是css中图片的公共位置
+          { 
+            loader: MiniCssExtractPlugin.loader,
+            // url引用图片位置的公共路径
+            options:{
+              publicPath: '../'
+            }
+          },
           'css-loader',
           // 将less文件编译成css文件
           // 需要下载 less-loader和less

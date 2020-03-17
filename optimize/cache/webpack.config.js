@@ -14,6 +14,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 
+
 module.exports = {
   entry: './main.js',
   output: {
@@ -26,32 +27,12 @@ module.exports = {
       {
         // 处理less资源
         test: /\.less$/,
-        use: [
-          // css 单独打包
-          { 
-            loader: MiniCssExtractPlugin.loader,
-            // url引用图片位置的公共路径
-            options:{
-              publicPath: '../'
-            }
-          },
-          { loader: "css-loader"},
-          { loader: "less-loader"},
-        ]
+        use: ['style-loader', 'css-loader', 'less-loader']
       },
       {
         // 处理css资源
         test: /\.css$/,
-        use: [
-          // css 单独打包
-          { 
-            loader: MiniCssExtractPlugin.loader,
-            options:{
-              publicPath: '../'
-            }
-          },
-          { loader: "css-loader"},
-        ]
+        use: ['style-loader', 'css-loader']
       },
       // 处理js 兼容性
       {
@@ -61,9 +42,7 @@ module.exports = {
         options: {
           // 预设：指示babel做怎么样的兼容性处理
           presets: [
-            'stage-3','es2015', 'react',
             [
-              
               '@babel/preset-env',
               {
                 // 按需加载
@@ -117,16 +96,9 @@ module.exports = {
     ]
   },
   plugins: [
-    // 清理文件夹build
-    new CleanWebpackPlugin(__dirname+'/build'),
     // plugins的配置
     new HtmlWebpackPlugin({
       template: './index.html'
-    }),
-    // 单独打包css文件
-    new MiniCssExtractPlugin({
-      // 对输出的文件进行重命名
-      filename:'css/built.css'
     })
   ],
   mode: 'development',
