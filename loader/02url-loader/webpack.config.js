@@ -60,6 +60,7 @@ module.exports = {
           // 图片大小小于8kb，就会被base64处理
           // 优点: 减少请求数量（减轻服务器压力）
           // 缺点：图片体积会更大（文件请求速度更慢）
+          // 单位：字节
           limit: 8 * 1024,
           // 问题：因为url-loader默认使用es6模块化解析，而html-loader引入图片是commonjs
           // 解析时会出问题：[object Module]
@@ -69,7 +70,7 @@ module.exports = {
           // [hash:10]取图片的hash的前10位
           // [ext]取文件原来扩展名
           name: '[hash:10].[ext]',
-          // 打包后的路径
+          // 打包后的路径(相对目标文件夹(dist文件夹)下的路径)
           outputPath: 'imgs'
         }
       }

@@ -31,7 +31,7 @@ module.exports = {
         // 匹配哪些文件
         test: /\.css$/,
         // 从下往上执行loader  先执行css-loader在执行style-loader
-        // css-loader 是编译css文件
+        // css-loader 是编译css文件 解析依赖,例如import css from 'file.css';
         // style-loader 是在html中加入style标签，引入已编译的css
         use: [ 
           { loader: "style-loader" },
@@ -56,6 +56,8 @@ module.exports = {
     new CleanWebpackPlugin(__dirname+'/dist'),
     //拷贝模板并添加js引用 替换模板变量
     new HtmlWebpackPlugin({
+      //通过模板生成的文件名 
+      //filename配置的html文件目录是相对于webpackConfig.output.path路径而言的，不是相对于当前项目目录结构的
       filename:'./index.html', //通过模板生成的文件名
       template:'./index.html',//模板路径
       inject:true, //是否自动在模板文件添加 自动生成的js文件链接的位置 允许插件修改哪些内容，true/'head'/'body'/false,

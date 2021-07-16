@@ -26,18 +26,20 @@ module.exports = {
 
   plugins: [
     new HtmlWebpackPlugin({
-      filename:'./index.html', //通过模板生成的文件名
-        template:'./index.html',//模板路径
-        inject:true, //是否自动在模板文件添加 自动生成的js文件链接的位置 允许插件修改哪些内容，true/'head'/'body'/false,
-        title:'这个是WebPack Demo',
-        sss:"hello world !",
+      //通过模板生成的文件名 
+      //filename配置的html文件目录是相对于webpackConfig.output.path路径而言的，不是相对于当前项目目录结构的
+      filename:'./index.html',
+      template:'./index.html',//模板路径
+      inject:true, //是否自动在模板文件添加 自动生成的js文件链接的位置 允许插件修改哪些内容，true/'head'/'body'/false,
+      title:'这个是WebPack Demo',
+      sss:"hello world !",
 
-        //minify属性详解：https://github.com/kangax/html-minifier#options-quick-reference
-        minify:{
-          removeComments:true ,//是否压缩时 去除注释
-          minifyCSS:true,//是否压缩style 样式(在index.html中的样式非外部样式)
-          minifyJS:true,//是否压缩直接出现在页面中的js
-        }
+      //minify属性详解：https://github.com/kangax/html-minifier#options-quick-reference
+      minify:{
+        removeComments:true ,//是否压缩时 去除注释
+        minifyCSS:true,//是否压缩style 样式(在index.html中的样式非外部样式)
+        minifyJS:true,//是否压缩直接出现在页面中的js
+      }
     }),
     new CleanWebpackPlugin('dist') 
   ]
