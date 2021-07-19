@@ -1,5 +1,8 @@
 import alt from "mycomponent";
 
-alt("hello world22");
-
-alert(globalVar.a);
+alt("a1");
+alt("a2");
+alt("a3");
+alt("a4");
+alt("a5");
+console.log("全局变量", globalVar.a);
